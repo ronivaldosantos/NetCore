@@ -25,6 +25,10 @@ namespace SalesWebMvc.Services
         //Acão para cadastrar novo vendedor
         public void Insert(Seller obj)
         {
+            //Provisoriamente para não ocorrer erro de ForeignKey está cadastrando o primeiro departamento
+            //para todos os vendedores novos cadastrados.
+            obj.Department = _context.Department.First();
+
             //Cadastra novo vendedor
             _context.Add(obj);
 
