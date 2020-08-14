@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore; // Responsável pela função include(Join)
+using SalesWebMvc.Services.Exceptions;
 
 namespace SalesWebMvc.Services
 {
@@ -52,6 +53,25 @@ namespace SalesWebMvc.Services
             _context.SaveChanges();
         }
 
+        // Método Update
+        public void Update(Seller obj)
+        {
+            // Lança exceptio se não existir no banco de dados um Id igual a Id do obj recebido
+            if (!_context.Seller.Any(x => x.Id == obj.Id))
+            {
+                throw new NotFoundException("Id Not Found");
+            }
 
+            try
+            {
+                //Realiza atualização 
+                _context.Update(obj);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException e) // Caso ocorra concorrencia durante atualização no DB
+            {
+                throw new DbConcurrencyException(e.Message);
+            }
+        }
     }
 }

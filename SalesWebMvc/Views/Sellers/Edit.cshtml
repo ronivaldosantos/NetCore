@@ -1,0 +1,51 @@
+﻿<!-- Indica qual objeto é a referência para a view-->
+@model SalesWebMvc.Models.ViewModels.SellerFormViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<h4>Saller</h4>
+
+<hr /> <!--Passa uma linha direta-->
+
+<div class="row">
+    <div class="col-md-4">
+        <!--Ocupará um terço da tela, Bootstrap divida a tela em 12 partes -->
+        <form asp-action="Edit">
+
+            <!--Id do vendedor em um campo oculto -->
+            <input type="hidden" asp-for="Seller.Id" />
+
+            <div class="form-group">
+                <label asp-for="Seller.Name" class="control-label">Name</label>
+                <input asp-for="Seller.Name" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Seller.Email" class="control-label">Email</label>
+                <input asp-for="Seller.Email" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Seller.BirthDate" class="control-label">BirthDate</label>
+                <input asp-for="Seller.BirthDate" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Seller.BaseSalary" class="control-label">Base Salary</label>
+                <input asp-for="Seller.BaseSalary" class="form-control" />
+            </div>
+
+            <!--Monta caixa de seleção para obter Departamento e vincular ao vendedor-->
+            <div class="form-group">
+                <label asp-for="Seller.DepartmentId" class="control-label"></label>
+                <select asp-for="Seller.DepartmentId" asp-items="@(new SelectList(Model.Departments,"Id","Name"))" class="form-control"></select>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn-default" />
+            </div>
+        </form>
+    </div>
+</div>

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using SalesWebMvc.Models;
 using SalesWebMvc.Models.ViewModels;
 using SalesWebMvc.Services;
+using SalesWebMvc.Services.Exceptions;
 
 namespace SalesWebMvc.Controllers
 {
@@ -86,6 +87,55 @@ namespace SalesWebMvc.Controllers
             }
 
             return View(obj);
+        }
+
+        //Criar método para editar os dados
+        public IActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var obj = _sellerService.FindById(id.Value);
+            if (obj == null) // Id passado é inválido
+            {
+                return NotFound();
+            }
+
+            //Carregar lista de departamentos
+            List<Department> departments = _departmentService.FindAll();
+            //Carrega vendedores para edição
+            SellerFormViewModel viewModel = new SellerFormViewModel { Seller = obj, Departments = departments };
+
+            return View(viewModel);
+        }
+
+        //Delete Post - Realiza a Atualização no BD
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id,Seller seller)
+        {
+            //Se o Id passado pela URL for diferente do Id do vendedor retorna exception
+            if (id != seller.Id)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                _sellerService.Update(seller);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (NotFoundException)
+            {
+                return NotFound();
+            }
+            catch (DbConcurrencyException)
+            {
+                return BadRequest();
+            }
+
         }
 
     }
