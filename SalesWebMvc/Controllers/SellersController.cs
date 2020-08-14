@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace SalesWebMvc.Controllers
         private readonly DepartmentService _departmentService;
 
         //Injeção de dependência no construtor
-        public SellersController(SellerService sellerService,DepartmentService departmentService)
+        public SellersController(SellerService sellerService, DepartmentService departmentService)
         {
             _sellerService = sellerService;
             _departmentService = departmentService;
@@ -45,19 +46,19 @@ namespace SalesWebMvc.Controllers
             _sellerService.Insert(seller); //Chama o método para gravar no BD
             return RedirectToAction(nameof(Index)); //Redireciona para recarregar a página.
         }
-        
+
         // Delete GET - Retorna os dados para confirmar se será deletado
         public IActionResult Delete(int? id) // ?-> Significa opcional
         {
             if (id == null) // Não foi passado Id
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
             var obj = _sellerService.FindById(id.Value);
             if (obj == null) // Id passado é inválido
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             return View(obj);
@@ -77,13 +78,13 @@ namespace SalesWebMvc.Controllers
         {
             if (id == null) // Não foi passado Id
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
             var obj = _sellerService.FindById(id.Value);
             if (obj == null) // Id passado é inválido
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             return View(obj);
@@ -94,13 +95,13 @@ namespace SalesWebMvc.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
             var obj = _sellerService.FindById(id.Value);
             if (obj == null) // Id passado é inválido
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             //Carregar lista de departamentos
@@ -114,12 +115,12 @@ namespace SalesWebMvc.Controllers
         //Delete Post - Realiza a Atualização no BD
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id,Seller seller)
+        public IActionResult Edit(int id, Seller seller)
         {
             //Se o Id passado pela URL for diferente do Id do vendedor retorna exception
             if (id != seller.Id)
             {
-                return BadRequest();
+                return RedirectToAction(nameof(Error), new { message = "Id mismatch" });
             }
 
             try
@@ -127,15 +128,21 @@ namespace SalesWebMvc.Controllers
                 _sellerService.Update(seller);
                 return RedirectToAction(nameof(Index));
             }
-            catch (NotFoundException)
+            catch (ApplicationException e)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = e.Message });
             }
-            catch (DbConcurrencyException)
-            {
-                return BadRequest();
-            }
+        }
 
+        public IActionResult Error(string message)
+        {
+            var viewModel = new ErrorViewModel
+            {
+                Message = message,
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier // Pega Id interno da transação
+            };
+
+            return View(viewModel);
         }
 
     }
