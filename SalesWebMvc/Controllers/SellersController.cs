@@ -44,5 +44,32 @@ namespace SalesWebMvc.Controllers
             _sellerService.Insert(seller); //Chama o método para gravar no BD
             return RedirectToAction(nameof(Index)); //Redireciona para recarregar a página.
         }
+        
+        // Delete GET - Retorna os dados para confirmar se será deletado
+        public IActionResult Delete(int? id) // ?-> Significa opcional
+        {
+            if (id == null) // Não foi passado Id
+            {
+                return NotFound();
+            }
+
+            var obj = _sellerService.FindById(id.Value);
+            if (obj == null) // Id passado é inválido
+            {
+                return NotFound();
+            }
+
+            return View(obj);
+        }
+
+        //Delete Post - Realiza a deleção no banco
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int id)
+        {
+            _sellerService.Remove(id);
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

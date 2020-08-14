@@ -19,7 +19,7 @@ namespace SalesWebMvc.Services
         //Operação para retornar todos os vendedores cadastrados
         public List<Seller> FindAll()
         {
-            return _context.Seller.ToList();        
+            return _context.Seller.ToList();
         }
 
         //Acão para cadastrar novo vendedor
@@ -27,13 +27,29 @@ namespace SalesWebMvc.Services
         {
             //Provisoriamente para não ocorrer erro de ForeignKey está cadastrando o primeiro departamento
             //para todos os vendedores novos cadastrados.
-           // obj.Department = _context.Department.First();
+            // obj.Department = _context.Department.First();
 
             //Cadastra novo vendedor
             _context.Add(obj);
 
             //Confirma a atualização no BD
             _context.SaveChanges();
-        }        
+        }
+
+        // Retornar um vendedor específico utilizando Linq
+        public Seller FindById(int id)
+        {
+            return _context.Seller.FirstOrDefault(obj => obj.Id == id);
+        }
+
+        // Remover vendedor selecionado
+        public void Remove(int id)
+        {
+            var obj = _context.Seller.Find(id);
+            _context.Seller.Remove(obj);
+            _context.SaveChanges();
+        }
+
+
     }
 }
