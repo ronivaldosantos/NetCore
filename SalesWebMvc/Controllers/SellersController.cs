@@ -71,5 +71,22 @@ namespace SalesWebMvc.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        //Criar método para exibir detalhes do vendedor
+        public IActionResult Details(int? id) //Recebe um Id opcional
+        {
+            if (id == null) // Não foi passado Id
+            {
+                return NotFound();
+            }
+
+            var obj = _sellerService.FindById(id.Value);
+            if (obj == null) // Id passado é inválido
+            {
+                return NotFound();
+            }
+
+            return View(obj);
+        }
+
     }
 }
