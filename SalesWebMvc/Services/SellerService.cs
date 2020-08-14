@@ -27,7 +27,7 @@ namespace SalesWebMvc.Services
         {
             //Provisoriamente para não ocorrer erro de ForeignKey está cadastrando o primeiro departamento
             //para todos os vendedores novos cadastrados.
-            obj.Department = _context.Department.First();
+           // obj.Department = _context.Department.First();
 
             //Cadastra novo vendedor
             _context.Add(obj);
