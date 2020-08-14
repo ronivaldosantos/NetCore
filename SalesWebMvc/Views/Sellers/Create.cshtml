@@ -1,0 +1,39 @@
+﻿@model SalesWebMvc.Models.Seller 
+<!-- Indica qual objeto é a referência para a view-->
+
+@{
+    ViewData["Title"] = "Create";
+   
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<h4>Saller</h4>
+
+<hr /> <!--Passa uma linha direta-->
+
+<div class="row">
+    <div class="col-md-4"> <!--Ocupará um terço da tela, Bootstrap divida a tela em 12 partes -->
+        <form asp-action="Create">
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Name</label>
+                <input asp-for="Name" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label">Email</label>
+                <input asp-for="Email" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="BirthDate" class="control-label">BirthDate</label>
+                <input asp-for="BirthDate" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="BaseSalary" class="control-label">Base Salary</label>
+                <input asp-for="BaseSalary" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn-default"/>
+            </div>
+        </form>
+    </div>
+</div>
