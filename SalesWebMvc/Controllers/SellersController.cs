@@ -43,6 +43,14 @@ namespace SalesWebMvc.Controllers
         [ValidateAntiForgeryToken] // Evitar ataques de hackers que aproveitam requisão aberta.
         public IActionResult Create(Seller seller)
         {
+            // Se o formulário não estiver preenchido corretamente retorna enquanto estiver inválido
+            if (!ModelState.IsValid)
+            {
+                var departments = _departmentService.FindAll();
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
+                return View(viewModel);
+            }
+
             _sellerService.Insert(seller); //Chama o método para gravar no BD
             return RedirectToAction(nameof(Index)); //Redireciona para recarregar a página.
         }
@@ -117,6 +125,13 @@ namespace SalesWebMvc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Seller seller)
         {
+            // Se o formulário não estiver preenchido corretamente retorna enquanto estiver inválido
+            if (!ModelState.IsValid)
+            {
+                var departments = _departmentService.FindAll();
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
+                return View(viewModel);
+            }
             //Se o Id passado pela URL for diferente do Id do vendedor retorna exception
             if (id != seller.Id)
             {
