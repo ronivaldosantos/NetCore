@@ -16,7 +16,7 @@
     <div class="col-md-4">
         <!--Ocupará um terço da tela, Bootstrap divida a tela em 12 partes -->
         <form asp-action="Edit">
-
+            <div asp-validation-summary="All" class="text-danger"></div>
             <!--Id do vendedor em um campo oculto -->
             <input type="hidden" asp-for="Seller.Id" />
 

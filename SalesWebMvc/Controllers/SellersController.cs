@@ -24,16 +24,16 @@ namespace SalesWebMvc.Controllers
             _departmentService = departmentService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             //Retorna para view uma lista dos vendedores.
-            var list = _sellerService.FindAll();
+            var list = await _sellerService.FindAllAsync();
             return View(list);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var departments = _departmentService.FindAll();
+            var departments = await _departmentService.FindAllAsync();
             var viewModel = new SellerFormViewModel { Departments = departments };
 
             return View(viewModel);
@@ -41,29 +41,29 @@ namespace SalesWebMvc.Controllers
 
         [HttpPost] //Anotacion indicando o tipo do verbo
         [ValidateAntiForgeryToken] // Evitar ataques de hackers que aproveitam requisão aberta.
-        public IActionResult Create(Seller seller)
+        public async Task<IActionResult> Create(Seller seller)
         {
             // Se o formulário não estiver preenchido corretamente retorna enquanto estiver inválido
             if (!ModelState.IsValid)
             {
-                var departments = _departmentService.FindAll();
+                var departments = await _departmentService.FindAllAsync();
                 var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
                 return View(viewModel);
             }
 
-            _sellerService.Insert(seller); //Chama o método para gravar no BD
+            await _sellerService.InsertAsync(seller); //Chama o método para gravar no BD
             return RedirectToAction(nameof(Index)); //Redireciona para recarregar a página.
         }
 
         // Delete GET - Retorna os dados para confirmar se será deletado
-        public IActionResult Delete(int? id) // ?-> Significa opcional
+        public async Task<IActionResult> Delete(int? id) // ?-> Significa opcional
         {
             if (id == null) // Não foi passado Id
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
-            var obj = _sellerService.FindById(id.Value);
+            var obj = await _sellerService.FindByIdAsync(id.Value);
             if (obj == null) // Id passado é inválido
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
@@ -75,21 +75,21 @@ namespace SalesWebMvc.Controllers
         //Delete Post - Realiza a deleção no banco
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            _sellerService.Remove(id);
+            await _sellerService.RemoveAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
         //Criar método para exibir detalhes do vendedor
-        public IActionResult Details(int? id) //Recebe um Id opcional
+        public async Task<IActionResult> Details(int? id) //Recebe um Id opcional
         {
             if (id == null) // Não foi passado Id
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
-            var obj = _sellerService.FindById(id.Value);
+            var obj = await _sellerService.FindByIdAsync(id.Value);
             if (obj == null) // Id passado é inválido
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
@@ -99,21 +99,21 @@ namespace SalesWebMvc.Controllers
         }
 
         //Criar método para editar os dados
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
-            var obj = _sellerService.FindById(id.Value);
+            var obj = await _sellerService.FindByIdAsync(id.Value);
             if (obj == null) // Id passado é inválido
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             //Carregar lista de departamentos
-            List<Department> departments = _departmentService.FindAll();
+            List<Department> departments = await _departmentService.FindAllAsync();
             //Carrega vendedores para edição
             SellerFormViewModel viewModel = new SellerFormViewModel { Seller = obj, Departments = departments };
 
@@ -123,12 +123,12 @@ namespace SalesWebMvc.Controllers
         //Delete Post - Realiza a Atualização no BD
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Seller seller)
+        public async Task<IActionResult> Edit(int id, Seller seller)
         {
             // Se o formulário não estiver preenchido corretamente retorna enquanto estiver inválido
             if (!ModelState.IsValid)
             {
-                var departments = _departmentService.FindAll();
+                var departments = await _departmentService.FindAllAsync();
                 var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
                 return View(viewModel);
             }
@@ -140,7 +140,7 @@ namespace SalesWebMvc.Controllers
 
             try
             {
-                _sellerService.Update(seller);
+                await _sellerService.UpdateAsync(seller);
                 return RedirectToAction(nameof(Index));
             }
             catch (ApplicationException e)
