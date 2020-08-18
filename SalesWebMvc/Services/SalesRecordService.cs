@@ -39,5 +39,30 @@ namespace SalesWebMvc.Services
                     .OrderByDescending(x => x.Date)
                     .ToListAsync();
         }
+        
+        // O retorno é IGrouping pois o resultado da consulta é agrupado por vendas.
+        public async Task<List< IGrouping<Department,SalesRecord>>> FindByDateGroupingAsync(DateTime? minDate, DateTime? maxDate)
+        {
+            var result = from obj in _context.SalesRecords select obj;
+            if (minDate.HasValue)
+            {
+                // Componto a consulta
+                result = result.Where(x => x.Date >= minDate.Value);
+
+            }
+            if (maxDate.HasValue)
+            {
+                // Componto a consulta
+                result = result.Where(x => x.Date <= maxDate.Value);
+            }
+
+            //Retornando a consulta
+            return await result
+                    .Include(x => x.Seller)
+                    .Include(x => x.Seller.Department)
+                    .OrderByDescending(x => x.Date)
+                    .GroupBy(x => x.Seller.Department)
+                    .ToListAsync();
+        }
     }
 }
